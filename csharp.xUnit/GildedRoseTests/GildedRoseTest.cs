@@ -1,6 +1,7 @@
 ﻿using Xunit;
 using System.Collections.Generic;
 using GildedRoseKata;
+using System;
 
 namespace GildedRoseTests;
 
@@ -93,12 +94,36 @@ public class GildedRoseTest
         Assert.Equal(0, Items[0].Quality);
     }
     [Fact]
+    public void itemValidations()
+    {
+        // Unit test item Validations quality
+
+        IList<Item> Items = new List<Item> { new Item { Name = "foo, something", SellIn = 5, Quality = -1 } };
+        var exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
+        Assert.Contains("Quality cannot be negative", exc.Message);
+
+        Items = new List<Item> { new Item { Name = "foo, something", SellIn = 5, Quality = 51 } };
+        exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
+        Assert.Contains("Quality cannot be more than 50", exc.Message);
+        
+        Items = new List<Item> { new Item { Name = "Sulfuras, something", SellIn = 5, Quality = 51 } };
+        exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
+        Assert.Contains("Sulfuras quality must be 80", exc.Message);
+
+        Items = new List<Item> { new Item { Name = "Sulfuras, something", SellIn = 5, Quality = 0 } };
+        exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
+        Assert.Contains("Sulfuras quality must be 80", exc.Message);
+
+    }
+
+    [Fact]
     public void conjured()
     {
         // Unit test Conjured items: SellIn & quality
         IList<Item> Items = new List<Item> { new Item { Name = "Conjured, Elara the Enchantress", SellIn = 5, Quality = 10 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
+
         Assert.Equal("Conjured, Elara the Enchantress", Items[0].Name);
         Assert.Equal(4, Items[0].SellIn);
         Assert.Equal(8, Items[0].Quality);

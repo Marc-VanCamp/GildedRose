@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Net;
+using static GildedRoseKata.GildedRose;
 
 namespace GildedRoseKata;
 
@@ -10,11 +12,26 @@ public class GildedRose
     {
         this.Items = Items;
     }
+    public enum ItemTypes
+    {
+        Common,
+        Aged,
+        Sulfuras,
+        Backstage,
+        Conjured
+    }
 
     public void UpdateQuality()
     {
+        foreach (var item in Items)
+        {
+            // Validate all items first
+            item.ValidateAndGetType();
+        }
         for (var i = 0; i < Items.Count; i++)
         {
+            var itemType = Items[i].ValidateAndGetType();
+
             if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
             {
                 if (Items[i].Quality > 0)
@@ -85,5 +102,31 @@ public class GildedRose
                 }
             }
         }
+    }
+}
+
+public static class ExtenstionsMethods
+{
+    public static ItemTypes ValidateAndGetType(this Item item)
+    {
+        var itemType = item.Name switch
+        {
+            var name when name.StartsWith("Aged") => GildedRose.ItemTypes.Aged,
+            var name when name.StartsWith("Sulfuras") => GildedRose.ItemTypes.Sulfuras,
+            var name when name.StartsWith("Backstage") => GildedRose.ItemTypes.Backstage,
+            var name when name.StartsWith("Conjured") => GildedRose.ItemTypes.Conjured,
+            _ => GildedRose.ItemTypes.Common
+        };
+        if (item.Quality < 0 ) throw new System.Exception($"{item.Name} Quality cannot be negative");
+        switch (itemType)
+        {
+            case GildedRose.ItemTypes.Sulfuras:
+                if (item.Quality != 80) throw new System.Exception($"{item.Name} Sulfuras quality must be 80");
+                break;
+            default:
+                if (item.Quality > 50) throw new System.Exception($"{item.Name} Quality cannot be more than 50");
+                break;
+        }
+        return itemType;
     }
 }
