@@ -136,13 +136,37 @@ public class GildedRoseTest
     public void conjured()
     {
         // Unit test Conjured items: SellIn & quality
-        IList<Item> Items = new List<Item> { new Item { Name = "Conjured, Elara the Enchantress", SellIn = 5, Quality = 10 } };
+        // Conjured Mana Cake, 3, 6
+        //IList<Item> Items = new List<Item> { new Item { Name = "Conjured Mana Cake", SellIn = 3, Quality = 6 } };
+        //GildedRose app = new GildedRose(Items);
+        //app.UpdateQuality();
+        //Assert.Equal("Conjured Mana Cake", Items[0].Name);
+        //Assert.Equal(2, Items[0].SellIn);
+        //Assert.Equal(4, Items[0].Quality);
+
+        IList<Item> Items = new List<Item> { new Item { Name = "Conjured, Elara the Enchantress", SellIn = 5, Quality = 11 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
-
         Assert.Equal("Conjured, Elara the Enchantress", Items[0].Name);
         Assert.Equal(4, Items[0].SellIn);
-        Assert.Equal(8, Items[0].Quality);
+        Assert.Equal(9, Items[0].Quality);
 
+        app.UpdateQuality();
+        Assert.Equal(3, Items[0].SellIn);
+        Assert.Equal(7, Items[0].Quality);
+
+        app.UpdateQuality();
+        app.UpdateQuality();
+        app.UpdateQuality();
+        Assert.Equal(0, Items[0].SellIn);
+        Assert.Equal(1, Items[0].Quality);
+
+        app.UpdateQuality();
+        Assert.Equal(-1, Items[0].SellIn);
+        Assert.Equal(0, Items[0].Quality);
+
+        app.UpdateQuality();
+        Assert.Equal(-2, Items[0].SellIn);
+        Assert.Equal(0, Items[0].Quality);
     }
 }
