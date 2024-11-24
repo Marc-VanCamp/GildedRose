@@ -9,9 +9,21 @@ public class GildedRoseTest
     [Fact]
     public void foo()
     {
-        IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 0, Quality = 0 } };
+        // Unit test Common items: SellIn & quality
+        IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 1, Quality = 5 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
-        Assert.Equal("fixme", Items[0].Name);
+        Assert.Equal("foo", Items[0].Name);
+        Assert.Equal(0, Items[0].SellIn);
+        Assert.Equal(4, Items[0].Quality);
+        app.UpdateQuality();
+        Assert.Equal(-1, Items[0].SellIn);
+        Assert.Equal(2, Items[0].Quality);
+        app.UpdateQuality();
+        Assert.Equal(-2, Items[0].SellIn);
+        Assert.Equal(0, Items[0].Quality);
+        app.UpdateQuality();
+        Assert.Equal(-3, Items[0].SellIn);
+        Assert.Equal(0, Items[0].Quality);
     }
 }
