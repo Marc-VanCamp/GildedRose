@@ -31,6 +31,33 @@ public class GildedRose
         for (var i = 0; i < Items.Count; i++)
         {
             var itemType = Items[i].ValidateAndGetType();
+            switch (itemType)
+            {
+                case ItemTypes.Sulfuras:
+                    break;
+                default:
+                    Items[i].SellIn = Items[i].SellIn - 1;
+                    break;
+            }
+            switch (itemType)
+            {
+                case ItemTypes.Common:
+                    if (Items[i].Quality > 0)
+                    {
+                        Items[i].Quality = Items[i].Quality - 1;
+                    }
+                    break;
+                case ItemTypes.Aged:
+                    break;
+                case ItemTypes.Sulfuras:
+                    break;
+                case ItemTypes.Backstage:
+                    break;
+                case ItemTypes.Conjured:
+                    break;
+            }
+            continue;
+
 
             if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
             {

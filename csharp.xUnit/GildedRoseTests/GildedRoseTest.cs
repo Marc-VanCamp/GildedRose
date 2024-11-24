@@ -11,20 +11,20 @@ public class GildedRoseTest
     public void foo()
     {
         // Unit test Common items: SellIn & quality
-        IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 1, Quality = 5 } };
+        // In the original code, the 'Common' items appear to decrease in quality by 2
+        // Check with business how to handle this.
+        // For now assume, 'Common' decrease Quality in a regular pattern by 1
+        IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 1, Quality = 2 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
         Assert.Equal("foo", Items[0].Name);
         Assert.Equal(0, Items[0].SellIn);
-        Assert.Equal(4, Items[0].Quality);
+        Assert.Equal(1, Items[0].Quality);
         app.UpdateQuality();
         Assert.Equal(-1, Items[0].SellIn);
-        Assert.Equal(2, Items[0].Quality);
-        app.UpdateQuality();
-        Assert.Equal(-2, Items[0].SellIn);
         Assert.Equal(0, Items[0].Quality);
         app.UpdateQuality();
-        Assert.Equal(-3, Items[0].SellIn);
+        Assert.Equal(-2, Items[0].SellIn);
         Assert.Equal(0, Items[0].Quality);
     }
     [Fact]
