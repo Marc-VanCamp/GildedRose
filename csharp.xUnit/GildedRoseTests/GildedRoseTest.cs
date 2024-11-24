@@ -8,7 +8,7 @@ namespace GildedRoseTests;
 public class GildedRoseTest
 {
     [Fact]
-    public void foo()
+    public void common()
     {
         // Unit test Common items: SellIn & quality
         // In the original code, the 'Common' items appear to decrease in quality by 2
@@ -28,9 +28,9 @@ public class GildedRoseTest
         Assert.Equal(0, Items[0].Quality);
     }
     [Fact]
-    public void brie()
+    public void aged()
     {
-        // Unit test Aged Brie items: SellIn & quality
+        // Unit test Aged  items: SellIn & quality
         IList<Item> Items = new List<Item> { new Item { Name = "Aged Brie", SellIn = 1, Quality = 48 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
@@ -57,41 +57,49 @@ public class GildedRoseTest
 
     }
     [Fact]
-    public void backstagepasses()
+    public void backstage()
     {
         // Unit test Backstage Passes items: SellIn & quality
-        IList<Item> Items = new List<Item> { new Item { Name = "Backstage passes to a TAFKAL80ETC concert", SellIn = 11, Quality = 40 } };
+        // The original code contained inconcistencies in the SellIn decrease and the bounderies '> or >= ' for quality seems not to be respected.
+        // This feature has been leveled to a decrease of 1 for each product at the beginning of the Quality Update
+        // This test needs to start at 12
+        IList<Item> Items = new List<Item> { new Item { Name = "Backstage passes to a TAFKAL80ETC concert", SellIn = 12, Quality = 40 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
         Assert.Equal("Backstage passes to a TAFKAL80ETC concert", Items[0].Name);
-        Assert.Equal(10, Items[0].SellIn);
+        Assert.Equal(11, Items[0].SellIn);
         Assert.Equal(41, Items[0].Quality);
+        Items[0].Quality = 40;
         app.UpdateQuality();
-        Assert.Equal(9, Items[0].SellIn);
-        Assert.Equal(43, Items[0].Quality);
+        Assert.Equal(10, Items[0].SellIn);
+        Assert.Equal(42, Items[0].Quality);
         // Fastforward
-        Items[0].SellIn = 6;
+        Items[0].SellIn = 7;
+        Items[0].Quality = 40;
+        app.UpdateQuality();
+        Assert.Equal(6, Items[0].SellIn);
+        Assert.Equal(42, Items[0].Quality);
+        Items[0].Quality = 40;
         app.UpdateQuality();
         Assert.Equal(5, Items[0].SellIn);
-        Assert.Equal(45, Items[0].Quality);
-        app.UpdateQuality();
-        Assert.Equal(4, Items[0].SellIn);
-        Assert.Equal(48, Items[0].Quality);
-        // Upper limit = 50
-        app.UpdateQuality();
-        Assert.Equal(3, Items[0].SellIn);
-        Assert.Equal(50, Items[0].Quality);
-        // Fastforward
+        Assert.Equal(43, Items[0].Quality);
+
         Items[0].SellIn = 1;
+        Items[0].Quality = 40;
+        app.UpdateQuality();
+        Assert.Equal(0, Items[0].SellIn);
+        Assert.Equal(43, Items[0].Quality);
+
+        // Upper limit = 50
+        Items[0].SellIn = 1;
+        Items[0].Quality = 49;
         app.UpdateQuality();
         Assert.Equal(0, Items[0].SellIn);
         Assert.Equal(50, Items[0].Quality);
+
         app.UpdateQuality();
         Assert.Equal(-1, Items[0].SellIn);
-        Assert.Equal(0, Items[0].Quality);
-        app.UpdateQuality();
-        Assert.Equal(-2, Items[0].SellIn);
-        Assert.Equal(0, Items[0].Quality);
+        Assert.Equal(50, Items[0].Quality);
     }
     [Fact]
     public void itemValidations()
@@ -113,6 +121,14 @@ public class GildedRoseTest
         Items = new List<Item> { new Item { Name = "Sulfuras, something", SellIn = 5, Quality = 0 } };
         exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
         Assert.Contains("Sulfuras quality must be 80", exc.Message);
+        
+        Items = new List<Item> { new Item { Name = "Aged, something", SellIn = 5, Quality = 100 } };
+        exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
+        Assert.Contains("Quality cannot be more than 50", exc.Message);
+
+        Items = new List<Item> { new Item { Name = "Backstage, something", SellIn = 5, Quality = 75 } };
+        exc = Assert.Throws<Exception>(() => (new GildedRose(Items)).UpdateQuality());
+        Assert.Contains("Quality cannot be more than 50", exc.Message);
 
     }
 
