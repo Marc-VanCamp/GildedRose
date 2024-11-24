@@ -26,4 +26,21 @@ public class GildedRoseTest
         Assert.Equal(-3, Items[0].SellIn);
         Assert.Equal(0, Items[0].Quality);
     }
+    [Fact]
+    public void brie()
+    {
+        // Unit test Aged Brie items: SellIn & quality
+        IList<Item> Items = new List<Item> { new Item { Name = "Aged Brie", SellIn = 1, Quality = 48 } };
+        GildedRose app = new GildedRose(Items);
+        app.UpdateQuality();
+        Assert.Equal("Aged Brie", Items[0].Name);
+        Assert.Equal(0, Items[0].SellIn);
+        Assert.Equal(49, Items[0].Quality);
+        app.UpdateQuality();
+        Assert.Equal(-1, Items[0].SellIn);
+        Assert.Equal(50, Items[0].Quality);
+        app.UpdateQuality();
+        Assert.Equal(-2, Items[0].SellIn);
+        Assert.Equal(50, Items[0].Quality);
+    }
 }
