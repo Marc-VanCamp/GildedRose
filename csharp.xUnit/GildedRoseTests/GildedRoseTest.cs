@@ -11,18 +11,15 @@ public class GildedRoseTest
     public void common()
     {
         // Unit test Common items: SellIn & quality
-        // In the original code, the 'Common' items appear to decrease in quality by 2
-        // Check with business how to handle this.
-        // For now assume, 'Common' decrease Quality in a regular pattern by 1
-        IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 1, Quality = 2 } };
+        IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 1, Quality = 4 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
         Assert.Equal("foo", Items[0].Name);
         Assert.Equal(0, Items[0].SellIn);
-        Assert.Equal(1, Items[0].Quality);
+        Assert.Equal(3, Items[0].Quality);
         app.UpdateQuality();
         Assert.Equal(-1, Items[0].SellIn);
-        Assert.Equal(0, Items[0].Quality);
+        Assert.Equal(1, Items[0].Quality);
         app.UpdateQuality();
         Assert.Equal(-2, Items[0].SellIn);
         Assert.Equal(0, Items[0].Quality);
@@ -60,9 +57,6 @@ public class GildedRoseTest
     public void backstage()
     {
         // Unit test Backstage Passes items: SellIn & quality
-        // The original code contained inconcistencies in the SellIn decrease and the bounderies '> or >= ' for quality seems not to be respected.
-        // This feature has been leveled to a decrease of 1 for each product at the beginning of the Quality Update
-        // This test needs to start at 12
         IList<Item> Items = new List<Item> { new Item { Name = "Backstage passes to a TAFKAL80ETC concert", SellIn = 12, Quality = 40 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
@@ -90,6 +84,11 @@ public class GildedRoseTest
         Assert.Equal(0, Items[0].SellIn);
         Assert.Equal(43, Items[0].Quality);
 
+        // Zero after sell date
+        app.UpdateQuality();
+        Assert.Equal(-1, Items[0].SellIn);
+        Assert.Equal(0, Items[0].Quality);
+
         // Upper limit = 50
         Items[0].SellIn = 1;
         Items[0].Quality = 49;
@@ -97,9 +96,6 @@ public class GildedRoseTest
         Assert.Equal(0, Items[0].SellIn);
         Assert.Equal(50, Items[0].Quality);
 
-        app.UpdateQuality();
-        Assert.Equal(-1, Items[0].SellIn);
-        Assert.Equal(50, Items[0].Quality);
     }
     [Fact]
     public void itemValidations()
@@ -136,34 +132,26 @@ public class GildedRoseTest
     public void conjured()
     {
         // Unit test Conjured items: SellIn & quality
-        // Conjured Mana Cake, 3, 6
-        //IList<Item> Items = new List<Item> { new Item { Name = "Conjured Mana Cake", SellIn = 3, Quality = 6 } };
-        //GildedRose app = new GildedRose(Items);
-        //app.UpdateQuality();
-        //Assert.Equal("Conjured Mana Cake", Items[0].Name);
-        //Assert.Equal(2, Items[0].SellIn);
-        //Assert.Equal(4, Items[0].Quality);
-
-        IList<Item> Items = new List<Item> { new Item { Name = "Conjured, Elara the Enchantress", SellIn = 5, Quality = 11 } };
+        IList<Item> Items = new List<Item> { new Item { Name = "Conjured, Elara the Enchantress", SellIn = 5, Quality = 15 } };
         GildedRose app = new GildedRose(Items);
         app.UpdateQuality();
         Assert.Equal("Conjured, Elara the Enchantress", Items[0].Name);
         Assert.Equal(4, Items[0].SellIn);
-        Assert.Equal(9, Items[0].Quality);
+        Assert.Equal(13, Items[0].Quality);
 
         app.UpdateQuality();
         Assert.Equal(3, Items[0].SellIn);
-        Assert.Equal(7, Items[0].Quality);
+        Assert.Equal(11, Items[0].Quality);
 
         app.UpdateQuality();
         app.UpdateQuality();
         app.UpdateQuality();
         Assert.Equal(0, Items[0].SellIn);
-        Assert.Equal(1, Items[0].Quality);
+        Assert.Equal(5, Items[0].Quality);
 
         app.UpdateQuality();
         Assert.Equal(-1, Items[0].SellIn);
-        Assert.Equal(0, Items[0].Quality);
+        Assert.Equal(1, Items[0].Quality);
 
         app.UpdateQuality();
         Assert.Equal(-2, Items[0].SellIn);

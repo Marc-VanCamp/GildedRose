@@ -42,44 +42,53 @@ public class GildedRose
                     item.SellIn--;
                     break;
             }
+            int? qualityDecrease = null;
+            int? qualityIncrease = null;
+
             switch (itemType)
             {
                 case ItemTypes.Common:
-                    if (item.Quality > 0)
-                    {
-                        item.Quality--;
-                    }
+                    qualityDecrease = 1;
                     break;
                 case ItemTypes.Aged:
-                    if (item.Quality < 50)
-                    {
-                        item.Quality++;
-                    }
+                    qualityIncrease = 1;
                     break;
                 case ItemTypes.Sulfuras:
                     // Keeps quality (at 80)
                     break;
                 case ItemTypes.Backstage:
-                    if (item.SellIn > 10 || item.SellIn < 0)
+                    if (item.SellIn > 10)
                     {
-                        item.Quality++;
+                        qualityIncrease = 1;
                     }
                     else if (item.SellIn > 5)
                     {
-                        item.Quality += 2;
+                        qualityIncrease = 2;
                     }
                     else if (item.SellIn >= 0)
                     {
-                        item.Quality += 3;
+                        qualityIncrease = 3;
                     }
-                    item.Quality = Math.Min(50, item.Quality);
+                    else
+                    {
+                        item.Quality = 0;
+                    }
                     break;
                 case ItemTypes.Conjured:
-                    item.Quality = item.Quality -= 2;
-                    item.Quality = Math.Max(0, item.Quality);
+                    qualityDecrease = 2;
                     break;
             }
-
+            if (qualityDecrease.HasValue)
+            {
+                // Double speed after sell date
+                if (item.SellIn < 0) qualityDecrease = qualityDecrease.Value * 2;
+                item.Quality = Math.Max(0, item.Quality -= qualityDecrease.Value);
+            }
+            if (qualityIncrease.HasValue)
+            {
+                if (item.SellIn < 0) qualityIncrease = qualityIncrease.Value * 2;
+                item.Quality = Math.Min(50, item.Quality += qualityIncrease.Value);
+            }
         }
     }
 }
