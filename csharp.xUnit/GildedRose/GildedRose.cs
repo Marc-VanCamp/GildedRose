@@ -28,11 +28,11 @@ public class GildedRose
         foreach (var item in Items)
         {
             // Validate all items first
-            item.ValidateAndGetType();
+            item.Validate();
         }
         foreach (var item in Items)
         {
-            var itemType = item.ValidateAndGetType();
+            var itemType = item.GetItemType();
             // Decreate SellIn for all items except Sulfuras
             switch (itemType)
             {
@@ -43,31 +43,30 @@ public class GildedRose
                     break;
             }
             int? qualityDecrease = null;
-            int? qualityIncrease = null;
 
             switch (itemType)
             {
                 case ItemTypes.Common:
-                    qualityDecrease = 1;
+                    qualityDecrease = -1;
                     break;
                 case ItemTypes.Aged:
-                    qualityIncrease = 1;
+                    qualityDecrease = 1;
                     break;
                 case ItemTypes.Sulfuras:
                     // Keeps quality (at 80)
                     break;
                 case ItemTypes.Backstage:
-                    if (item.SellIn > 10)
+                    if (item.SellIn >= 10)
                     {
-                        qualityIncrease = 1;
+                        qualityDecrease = 1;
                     }
-                    else if (item.SellIn > 5)
+                    else if (item.SellIn >= 5)
                     {
-                        qualityIncrease = 2;
+                        qualityDecrease = 2;
                     }
                     else if (item.SellIn >= 0)
                     {
-                        qualityIncrease = 3;
+                        qualityDecrease = 3;
                     }
                     else
                     {
@@ -75,19 +74,14 @@ public class GildedRose
                     }
                     break;
                 case ItemTypes.Conjured:
-                    qualityDecrease = 2;
+                    qualityDecrease = -2;
                     break;
             }
             if (qualityDecrease.HasValue)
             {
                 // Double speed after sell date
                 if (item.SellIn < 0) qualityDecrease = qualityDecrease.Value * 2;
-                item.Quality = Math.Max(0, item.Quality -= qualityDecrease.Value);
-            }
-            if (qualityIncrease.HasValue)
-            {
-                if (item.SellIn < 0) qualityIncrease = qualityIncrease.Value * 2;
-                item.Quality = Math.Min(50, item.Quality += qualityIncrease.Value);
+                item.Quality = Math.Min(50,Math.Max(0, item.Quality += qualityDecrease.Value));
             }
         }
     }
@@ -95,9 +89,9 @@ public class GildedRose
 
 public static class ExtenstionsMethods
 {
-    public static ItemTypes ValidateAndGetType(this Item item)
+    public static ItemTypes GetItemType(this Item item)
     {
-        var itemType = item.Name switch
+        return item.Name switch
         {
             var name when name.StartsWith("Aged") => GildedRose.ItemTypes.Aged,
             var name when name.StartsWith("Sulfuras") => GildedRose.ItemTypes.Sulfuras,
@@ -105,7 +99,11 @@ public static class ExtenstionsMethods
             var name when name.StartsWith("Conjured") => GildedRose.ItemTypes.Conjured,
             _ => GildedRose.ItemTypes.Common
         };
-        if (item.Quality < 0) throw new System.Exception($"{item.Name} Quality cannot be negative");
+    }
+    public static void Validate(this Item item)
+    {
+        if (item.Quality < 0) throw new System.Exception($"{item.Name} Quality cannot be negative");  
+        var itemType = item.GetItemType();  
         switch (itemType)
         {
             case GildedRose.ItemTypes.Sulfuras:
@@ -115,6 +113,6 @@ public static class ExtenstionsMethods
                 if (item.Quality > 50) throw new System.Exception($"{item.Name} Quality cannot be more than 50");
                 break;
         }
-        return itemType;
+        return;
     }
 }

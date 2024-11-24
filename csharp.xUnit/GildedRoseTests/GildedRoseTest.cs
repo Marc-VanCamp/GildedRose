@@ -66,16 +66,20 @@ public class GildedRoseTest
         Items[0].Quality = 40;
         app.UpdateQuality();
         Assert.Equal(10, Items[0].SellIn);
+        Assert.Equal(41, Items[0].Quality);
+        Items[0].Quality = 40; 
+        app.UpdateQuality();
+        Assert.Equal(9, Items[0].SellIn);
         Assert.Equal(42, Items[0].Quality);
         // Fastforward
-        Items[0].SellIn = 7;
-        Items[0].Quality = 40;
-        app.UpdateQuality();
-        Assert.Equal(6, Items[0].SellIn);
-        Assert.Equal(42, Items[0].Quality);
+        Items[0].SellIn = 6;
         Items[0].Quality = 40;
         app.UpdateQuality();
         Assert.Equal(5, Items[0].SellIn);
+        Assert.Equal(42, Items[0].Quality);
+        Items[0].Quality = 40;
+        app.UpdateQuality();
+        Assert.Equal(4, Items[0].SellIn);
         Assert.Equal(43, Items[0].Quality);
 
         Items[0].SellIn = 1;
